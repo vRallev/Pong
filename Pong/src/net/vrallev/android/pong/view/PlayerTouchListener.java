@@ -1,18 +1,19 @@
-package net.vrallev.android.pong.game;
+package net.vrallev.android.pong.view;
 
 import android.view.MotionEvent;
 import android.view.View;
+import net.vrallev.android.pong.game.GameField;
 
 /**
  * @author Ralf Wondratschek
  */
-public class GameTouchListener implements View.OnTouchListener {
+public class PlayerTouchListener implements View.OnTouchListener {
 
     private boolean mFirstTouchLeft;
     private boolean mOnePlayer;
     private GameField mGameField;
 
-    public GameTouchListener(boolean onePlayer, GameField gameField) {
+    public PlayerTouchListener(boolean onePlayer, GameField gameField) {
         mOnePlayer = onePlayer;
         mGameField = gameField;
     }

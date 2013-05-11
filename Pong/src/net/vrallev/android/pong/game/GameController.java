@@ -5,6 +5,8 @@ package net.vrallev.android.pong.game;
  */
 public class GameController {
 
+    private static final double DEFAULT_SPEED = 1.0;
+
     private final GameField mGameField;
     private final GameLoop mGameLoop;
 
@@ -14,11 +16,11 @@ public class GameController {
     private int mPlayerRightScore;
 
     public GameController() {
-        mGameSpeed = 1.0;
+        mGameSpeed = DEFAULT_SPEED;
 
         mGameField = new GameField();
 
-        mGameLoop = new GameLoop(mGameField, mGameSpeed);
+        mGameLoop = new GameLoop(this);
         mGameLoop.start();
     }
 
@@ -28,7 +30,7 @@ public class GameController {
         mPlayerLeftScore = state.mPlayerLeftScore;
         mPlayerRightScore = state.mPlayerRightScore;
 
-        mGameLoop = new GameLoop(mGameField, mGameSpeed);
+        mGameLoop = new GameLoop(this);
         mGameLoop.start();
     }
 
@@ -63,8 +65,13 @@ public class GameController {
         return mGameSpeed;
     }
 
-    public void setGameSpeed(double gameSpeed) {
-        mGameSpeed = gameSpeed;
+    public void resetGameSpeed() {
+        setGameSpeed(DEFAULT_SPEED);
+    }
+
+    public void setGameSpeed(double speed) {
+        mGameSpeed = speed;
+        mGameLoop.setGameSpeed(speed);
     }
 
     public int getPlayerRightScore() {

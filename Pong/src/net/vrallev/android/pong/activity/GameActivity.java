@@ -13,7 +13,7 @@ import net.vrallev.android.pong.R;
 import net.vrallev.android.pong.game.GameEvent;
 import net.vrallev.android.pong.game.GameController;
 import net.vrallev.android.pong.game.GameState;
-import net.vrallev.android.pong.game.GameTouchListener;
+import net.vrallev.android.pong.view.PlayerTouchListener;
 import net.vrallev.android.pong.view.DrawingView;
 
 /**
@@ -51,7 +51,7 @@ public class GameActivity extends BaseActivity {
 
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
         mDrawingView.setGameField(mGameController.getGameField());
-        mDrawingView.setOnTouchListener(new GameTouchListener(false, mGameController.getGameField()));
+        mDrawingView.setOnTouchListener(new PlayerTouchListener(false, mGameController.getGameField()));
         mDrawingView.setAlpha(0.0f);
         mDrawingView.setScaleY(0.0f);
         mDrawingView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).scaleY(1.0f).alpha(1.0f);
@@ -116,7 +116,7 @@ public class GameActivity extends BaseActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(GameEvent event) {
+    public void onEvent(GameEvent event) {
         switch (event.getAction()) {
             case CONTINUE_GAME:
                 mGameController.setGameRunning(true);
@@ -127,18 +127,29 @@ public class GameActivity extends BaseActivity {
                 break;
 
             case BALL_OUTSIDE_LEFT:
-                scalePlayButtonIn();
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerRightScore(1 + mGameController.getPlayerRightScore());
-                mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
-
+                mGameController.resetGameSpeed();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        scalePlayButtonIn();
+                        mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
+                    }
+                });
                 break;
 
             case BALL_OUTSIDE_RIGHT:
-                scalePlayButtonIn();
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerLeftScore(1 + mGameController.getPlayerLeftScore());
-                mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
+                mGameController.resetGameSpeed();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        scalePlayButtonIn();
+                        mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
+                    }
+                });
                 break;
 
             case GAME_CLOSED:

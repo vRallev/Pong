@@ -12,12 +12,16 @@ import net.vrallev.android.base.util.L;
     private boolean mPaused = true;
     private boolean mFinished = false;
 
-    private GameField mGameField;
+    private final GameController mGameController;
+    private final GameField mGameField;
     private double mGameSpeed;
 
-    /*package*/ GameLoop(GameField field, double gameSpeed) {
-        mGameField = field;
-        mGameSpeed = gameSpeed;
+    private long mSpeedControlTime;
+
+    /*package*/ GameLoop(GameController controller) {
+        mGameController = controller;
+        mGameField = controller.getGameField();
+        mGameSpeed = controller.getGameSpeed();
     }
 
     /**
@@ -57,10 +61,21 @@ import net.vrallev.android.base.util.L;
     }
 
     private void innerRun() throws InterruptedException {
+        mSpeedControlTime = System.currentTimeMillis();
+
         while (!mFinished) {
             if (mPaused) {
+                mSpeedControlTime = System.currentTimeMillis();
+
                 Thread.sleep(10);
                 continue;
+            }
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - mSpeedControlTime > 150) {
+                mSpeedControlTime = currentTime;
+                mGameSpeed += 0.01;
+                mGameController.setGameSpeed(mGameSpeed);
             }
 
             mGameField.moveBall(mGameSpeed);
