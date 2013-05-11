@@ -9,7 +9,7 @@
         android:targetSdkVersion="17" />
 
     <application
-        android:name="net.vrallev.android.pong.App"
+        android:name="net.vrallev.android.base.App"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
