@@ -17,9 +17,7 @@ import net.vrallev.android.pong.view.PlayerTouchListener;
 import net.vrallev.android.pong.view.DrawingView;
 
 /**
- *
  * @author Ralf Wondratschek
- *
  */
 public class GameActivity extends BaseActivity {
 
@@ -157,6 +155,15 @@ public class GameActivity extends BaseActivity {
                 finish();
                 break;
 
+            case GAME_FINISHED:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        askForRestart();
+                    }
+                });
+                break;
+
         }
     }
 
@@ -183,6 +190,30 @@ public class GameActivity extends BaseActivity {
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
+
+    private void askForRestart() {
+        DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mGameController.setPlayerLeftScore(0);
+                        mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
+                        mGameController.setPlayerRightScore(0);
+                        mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.GAME_CLOSED));
+                }
+            }
+        };
+        new AlertDialog.Builder(this)
+                .setMessage("Game finished. Do you want to restart?")
+                .setTitle("Finished")
+                .setPositiveButton("Restart", onClickListener)
+                .setNegativeButton("Close", onClickListener)
                 .show();
     }
 

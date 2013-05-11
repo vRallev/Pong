@@ -38,7 +38,8 @@ public class GameEvent {
         BALL_OUTSIDE_RIGHT,
         CONTINUE_GAME,
         PAUSE_GAME,
-        GAME_CLOSED
+        GAME_CLOSED,
+        GAME_FINISHED
 
     }
 

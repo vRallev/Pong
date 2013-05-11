@@ -1,5 +1,7 @@
 package net.vrallev.android.pong.game;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * @author Ralf Wondratschek
  */
@@ -80,6 +82,7 @@ public class GameController {
 
     public void setPlayerRightScore(int playerRightScore) {
         mPlayerRightScore = playerRightScore;
+        checkScore(playerRightScore);
     }
 
     public int getPlayerLeftScore() {
@@ -88,5 +91,12 @@ public class GameController {
 
     public void setPlayerLeftScore(int playerLeftScore) {
         mPlayerLeftScore = playerLeftScore;
+        checkScore(playerLeftScore);
+    }
+
+    private void checkScore(int score) {
+        if (score == 10) {
+            EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.GAME_FINISHED));
+        }
     }
 }
