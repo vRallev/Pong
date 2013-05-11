@@ -3,7 +3,7 @@ package net.vrallev.android.pong.game;
 /**
  * @author Ralf Wondratschek
  */
-public class GameHost {
+public class GameController {
 
     private final GameField mGameField;
     private final GameLoop mGameLoop;
@@ -13,10 +13,20 @@ public class GameHost {
     private int mPlayerLeftScore;
     private int mPlayerRightScore;
 
-    public GameHost() {
-        mGameSpeed = 0.5;
+    public GameController() {
+        mGameSpeed = 1.0;
 
         mGameField = new GameField();
+
+        mGameLoop = new GameLoop(mGameField, mGameSpeed);
+        mGameLoop.start();
+    }
+
+    public GameController(GameState state) {
+        mGameSpeed = state.mGameSpeed;
+        mGameField = state.mGameField;
+        mPlayerLeftScore = state.mPlayerLeftScore;
+        mPlayerRightScore = state.mPlayerRightScore;
 
         mGameLoop = new GameLoop(mGameField, mGameSpeed);
         mGameLoop.start();

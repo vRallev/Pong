@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.vrallev.android.pong"
-    android:versionCode="1"
-    android:versionName="1.0" >
+          package="net.vrallev.android.pong"
+          android:versionCode="1"
+          android:versionName="1.0">
 
     <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+            android:minSdkVersion="14"
+            android:targetSdkVersion="17"/>
 
     <application
-        android:name="net.vrallev.android.base.App"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+            android:name="net.vrallev.android.base.App"
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:hardwareAccelerated="true"
+            android:theme="@style/AppTheme">
         <activity
-            android:name="net.vrallev.android.pong.activity.MainActivity"
-            android:label="@string/app_name" >
+                android:name="net.vrallev.android.pong.activity.MainActivity"
+                android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
-            android:name="net.vrallev.android.pong.activity.GameActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/GameTheme" >
+                android:name="net.vrallev.android.pong.activity.GameActivity"
+                android:screenOrientation="landscape"
+                android:theme="@style/GameTheme">
         </activity>
     </application>
 

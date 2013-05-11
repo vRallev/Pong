@@ -2,7 +2,6 @@ package net.vrallev.android.pong.game;
 
 import android.view.MotionEvent;
 import android.view.View;
-import de.greenrobot.event.EventBus;
 
 /**
  * @author Ralf Wondratschek
@@ -11,9 +10,11 @@ public class GameTouchListener implements View.OnTouchListener {
 
     private boolean mFirstTouchLeft;
     private boolean mOnePlayer;
+    private GameField mGameField;
 
-    public GameTouchListener(boolean onePlayer) {
+    public GameTouchListener(boolean onePlayer, GameField gameField) {
         mOnePlayer = onePlayer;
+        mGameField = gameField;
     }
 
     @Override
@@ -45,16 +46,14 @@ public class GameTouchListener implements View.OnTouchListener {
             }
 
             if (leftY >= 0) {
-                EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PLAYER_LEFT_MOVED).setPositionY(leftY));
-                //mGameField.setPlayerLeftPos(leftY);
+                mGameField.setPlayerLeftPos(leftY);
             }
             if (rightY >= 0) {
-                EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PLAYER_RIGHT_MOVED).setPositionY(rightY));
-                //mGameField.setPlayerRightPos(rightY);
+                mGameField.setPlayerRightPos(rightY);
             }
 
         } else {
-            EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PLAYER_RIGHT_MOVED).setPositionY((int) event.getY()));
+            mGameField.setPlayerRightPos((int) event.getY());
         }
 
         return true;

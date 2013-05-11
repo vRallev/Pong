@@ -7,5 +7,7 @@
     <string name="start_network_game">Start Network Game</string>
     <string name="play_button">Play button</string>
     <string name="pause_button">Pause button</string>
+    <string name="do_you_really_want_to_quit_the_game">Do you really want to quit the game?</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

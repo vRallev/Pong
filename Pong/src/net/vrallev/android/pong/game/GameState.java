@@ -11,14 +11,18 @@ public class GameState {
         return new Gson().fromJson(json, GameState.class);
     }
 
-    private final boolean mRunning;
-    private final double mGameSpeed;
-    private final GameField mGameField;
+    /*package*/ final boolean mRunning;
+    /*package*/ final double mGameSpeed;
+    /*package*/ final GameField mGameField;
+    /*package*/ final int mPlayerLeftScore;
+    /*package*/ final int mPlayerRightScore;
 
-    public GameState(GameHost host) {
+    public GameState(GameController host) {
         mGameField = host.getGameField();
         mRunning = host.isGameRunning();
         mGameSpeed = host.getGameSpeed();
+        mPlayerLeftScore = host.getPlayerLeftScore();
+        mPlayerRightScore = host.getPlayerRightScore();
     }
 
     public String toJson() {

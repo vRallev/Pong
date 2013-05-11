@@ -1,5 +1,6 @@
 package net.vrallev.android.pong.activity;
 
+import net.vrallev.android.base.BaseActivity;
 import net.vrallev.android.pong.R;
 import android.content.Intent;
 import android.os.Bundle;

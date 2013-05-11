@@ -1,5 +1,7 @@
 package net.vrallev.android.pong.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,7 +10,8 @@ import de.greenrobot.event.EventBus;
 import net.vrallev.android.base.BaseActivity;
 import net.vrallev.android.pong.R;
 import net.vrallev.android.pong.game.GameEvent;
-import net.vrallev.android.pong.game.GameHost;
+import net.vrallev.android.pong.game.GameController;
+import net.vrallev.android.pong.game.GameState;
 import net.vrallev.android.pong.game.GameTouchListener;
 import net.vrallev.android.pong.view.DrawingView;
 
@@ -19,13 +22,15 @@ import net.vrallev.android.pong.view.DrawingView;
  */
 public class GameActivity extends BaseActivity {
 
+    private static final String GAME_STATE = "gameState";
+
 	private DrawingView mDrawingView;
     private ImageView mPlayView;
 
     private TextView mTextViewScoreLeft;
     private TextView mTextViewScoreRight;
 
-    private GameHost mGameHost;
+    private GameController mGameController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +39,26 @@ public class GameActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 
-        mGameHost = new GameHost();
+        if (savedInstanceState != null && savedInstanceState.getString(GAME_STATE) != null) {
+            GameState gameState = GameState.fromJson(savedInstanceState.getString(GAME_STATE));
+            mGameController = new GameController(gameState);
+        } else {
+            mGameController = new GameController();
+        }
 
 		mDrawingView = (DrawingView) findViewById(R.id.drawingView);
-		mDrawingView.setGameField(mGameHost.getGameField());
-        mDrawingView.setOnTouchListener(new GameTouchListener(false));
+		mDrawingView.setGameField(mGameController.getGameField());
+        mDrawingView.setOnTouchListener(new GameTouchListener(false, mGameController.getGameField()));
 
         mPlayView = (ImageView) findViewById(R.id.imageView_play);
         mPlayView.setOnClickListener(mOnClickListener);
 
         mTextViewScoreLeft = (TextView) findViewById(R.id.textView_score_left);
         mTextViewScoreRight = (TextView) findViewById(R.id.textView_score_right);
-        mTextViewScoreLeft.setText(String.valueOf(mGameHost.getPlayerLeftScore()));
-        mTextViewScoreRight.setText(String.valueOf(mGameHost.getPlayerRightScore()));
+        mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
+        mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
 
         // TODO: scale animation for button
-        // TODO: score
 	}
 
 	@Override
@@ -72,53 +81,49 @@ public class GameActivity extends BaseActivity {
 	}
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(GAME_STATE, new GameState(mGameController).toJson());
+    }
+
+    @Override
     public void onBackPressed() {
-        if (mGameHost.isGameRunning()) {
+        if (mGameController.isGameRunning()) {
             EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PAUSE_GAME));
         } else {
-            // TODO: confirm
-            EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.GAME_CLOSED));
+            askForConfirmation();
         }
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(GameEvent event) {
         switch (event.getAction()) {
             case CONTINUE_GAME:
                 mPlayView.setVisibility(View.INVISIBLE);
-                mGameHost.setGameRunning(true);
+                mGameController.setGameRunning(true);
                 break;
 
             case PAUSE_GAME:
                 mPlayView.setVisibility(View.VISIBLE);
-                mGameHost.setGameRunning(false);
-                break;
-
-            case PLAYER_LEFT_MOVED:
-                mGameHost.getGameField().setPlayerLeftPos(event.getPositionY());
-                break;
-
-            case PLAYER_RIGHT_MOVED:
-                mGameHost.getGameField().setPlayerRightPos(event.getPositionY());
+                mGameController.setGameRunning(false);
                 break;
 
             case BALL_OUTSIDE_LEFT:
                 mPlayView.setVisibility(View.VISIBLE);
-                mGameHost.setGameRunning(false);
-                mGameHost.setPlayerRightScore(1 + mGameHost.getPlayerRightScore());
-                mTextViewScoreRight.setText(String.valueOf(mGameHost.getPlayerRightScore()));
+                mGameController.setGameRunning(false);
+                mGameController.setPlayerRightScore(1 + mGameController.getPlayerRightScore());
+                mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
 
                 break;
 
             case BALL_OUTSIDE_RIGHT:
                 mPlayView.setVisibility(View.VISIBLE);
-                mGameHost.setGameRunning(false);
-                mGameHost.setPlayerLeftScore(1 + mGameHost.getPlayerLeftScore());
-                mTextViewScoreLeft.setText(String.valueOf(mGameHost.getPlayerLeftScore()));
+                mGameController.setGameRunning(false);
+                mGameController.setPlayerLeftScore(1 + mGameController.getPlayerLeftScore());
+                mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
                 break;
 
             case GAME_CLOSED:
-                mGameHost.stopGame();
+                mGameController.stopGame();
                 finish();
                 break;
 
@@ -136,4 +141,18 @@ public class GameActivity extends BaseActivity {
             }
         }
     };
+
+    private void askForConfirmation() {
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.do_you_really_want_to_quit_the_game))
+                .setTitle(getString(R.string.confirm))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.GAME_CLOSED));
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
 }

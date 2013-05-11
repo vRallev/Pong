@@ -2,7 +2,7 @@
 
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"/>
 
-    <style name="GameTheme" parent="android:style/Theme.Black.NoTitleBar.Fullscreen">
+    <style name="GameTheme" parent="android:style/Theme.Holo.NoActionBar.Fullscreen">
         <item name="android:windowBackground">@color/window_background_color</item>
     </style>
 

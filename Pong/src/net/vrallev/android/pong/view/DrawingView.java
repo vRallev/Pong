@@ -115,8 +115,8 @@ public class DrawingView extends View {
 	}
 	
 	private void setGameFieldBounds(int w, int h) {
-		if (mGameField != null) {
-			mGameField.updateBounds(w, h);
+		if (mGameField != null && w > 0 && h > 0) {
+			mGameField.setDisplayBounds(w, h);
 
 			mPaint.setStrokeWidth(mGameField.getBallWidth());
 			mPaintMiddleLine.setStrokeWidth(mGameField.getBallWidth() / 4);
