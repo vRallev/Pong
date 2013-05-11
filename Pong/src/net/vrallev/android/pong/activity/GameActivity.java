@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import de.greenrobot.event.EventBus;
@@ -16,7 +17,7 @@ import net.vrallev.android.pong.game.GameTouchListener;
 import net.vrallev.android.pong.view.DrawingView;
 
 /**
- * 
+ *
  * @author Ralf Wondratschek
  *
  */
@@ -24,7 +25,9 @@ public class GameActivity extends BaseActivity {
 
     private static final String GAME_STATE = "gameState";
 
-	private DrawingView mDrawingView;
+    private static final long ANIMATION_DURATION = 1500l;
+
+    private DrawingView mDrawingView;
     private ImageView mPlayView;
 
     private TextView mTextViewScoreLeft;
@@ -32,12 +35,12 @@ public class GameActivity extends BaseActivity {
 
     private GameController mGameController;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         EventBus.getDefault().register(this);
 
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_game);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
 
         if (savedInstanceState != null && savedInstanceState.getString(GAME_STATE) != null) {
             GameState gameState = GameState.fromJson(savedInstanceState.getString(GAME_STATE));
@@ -46,39 +49,49 @@ public class GameActivity extends BaseActivity {
             mGameController = new GameController();
         }
 
-		mDrawingView = (DrawingView) findViewById(R.id.drawingView);
-		mDrawingView.setGameField(mGameController.getGameField());
+        mDrawingView = (DrawingView) findViewById(R.id.drawingView);
+        mDrawingView.setGameField(mGameController.getGameField());
         mDrawingView.setOnTouchListener(new GameTouchListener(false, mGameController.getGameField()));
+        mDrawingView.setAlpha(0.0f);
+        mDrawingView.setScaleY(0.0f);
+        mDrawingView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).scaleY(1.0f).alpha(1.0f);
 
         mPlayView = (ImageView) findViewById(R.id.imageView_play);
         mPlayView.setOnClickListener(mOnClickListener);
+        mPlayView.setScaleX(0.0f);
+        mPlayView.setScaleY(0.0f);
+        scalePlayButtonIn();
 
         mTextViewScoreLeft = (TextView) findViewById(R.id.textView_score_left);
         mTextViewScoreRight = (TextView) findViewById(R.id.textView_score_right);
         mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
         mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
+        mTextViewScoreLeft.setAlpha(0.0f);
+        mTextViewScoreRight.setAlpha(0.0f);
+        mTextViewScoreLeft.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
+        mTextViewScoreRight.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
+    }
 
-        // TODO: scale animation for button
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		findViewById(android.R.id.content).setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mHideSoftKeysRunnable.run();
+    }
 
     @Override
     protected void onPause() {
         EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PAUSE_GAME));
+        mDrawingView.getHandler().removeCallbacks(mHideSoftKeysRunnable);
+
         super.onPause();
     }
 
     @Override
-	protected void onDestroy() {
-		super.onDestroy();
+    protected void onDestroy() {
+        super.onDestroy();
 
         EventBus.getDefault().unregister(this);
-	}
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -88,27 +101,33 @@ public class GameActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (mGameController.isGameRunning()) {
+        postHideSoftKeys();
+
+        if (mOutAnimationRunning) {
+            scalePlayButtonIn();
+
+        } else if (mGameController.isGameRunning()) {
+            scalePlayButtonIn();
             EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PAUSE_GAME));
+
         } else {
             askForConfirmation();
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(GameEvent event) {
         switch (event.getAction()) {
             case CONTINUE_GAME:
-                mPlayView.setVisibility(View.INVISIBLE);
                 mGameController.setGameRunning(true);
                 break;
 
             case PAUSE_GAME:
-                mPlayView.setVisibility(View.VISIBLE);
                 mGameController.setGameRunning(false);
                 break;
 
             case BALL_OUTSIDE_LEFT:
-                mPlayView.setVisibility(View.VISIBLE);
+                scalePlayButtonIn();
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerRightScore(1 + mGameController.getPlayerRightScore());
                 mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
@@ -116,7 +135,7 @@ public class GameActivity extends BaseActivity {
                 break;
 
             case BALL_OUTSIDE_RIGHT:
-                mPlayView.setVisibility(View.VISIBLE);
+                scalePlayButtonIn();
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerLeftScore(1 + mGameController.getPlayerLeftScore());
                 mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
@@ -136,7 +155,7 @@ public class GameActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.imageView_play:
-                    EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.CONTINUE_GAME));
+                    scalePlayButtonOut();
                     break;
             }
         }
@@ -155,4 +174,33 @@ public class GameActivity extends BaseActivity {
                 .setNegativeButton(android.R.string.no, null)
                 .show();
     }
+
+    private void scalePlayButtonIn() {
+        mPlayView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).scaleX(1.0f).scaleY(1.0f).setDuration(ANIMATION_DURATION);
+    }
+
+    private boolean mOutAnimationRunning;
+
+    private void scalePlayButtonOut() {
+        mOutAnimationRunning = true;
+        mPlayView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).scaleX(0.0f).scaleY(0.0f).setDuration(ANIMATION_DURATION).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.CONTINUE_GAME));
+                mOutAnimationRunning = false;
+            }
+        });
+    }
+
+    private void postHideSoftKeys() {
+        mDrawingView.getHandler().removeCallbacks(mHideSoftKeysRunnable);
+        mDrawingView.getHandler().postDelayed(mHideSoftKeysRunnable, 3000l);
+    }
+
+    private Runnable mHideSoftKeysRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mDrawingView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        }
+    };
 }
