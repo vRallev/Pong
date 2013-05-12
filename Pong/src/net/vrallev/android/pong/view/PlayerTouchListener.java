@@ -2,6 +2,7 @@ package net.vrallev.android.pong.view;
 
 import android.view.MotionEvent;
 import android.view.View;
+import net.vrallev.android.pong.game.GameEvent;
 import net.vrallev.android.pong.game.GameField;
 
 /**
@@ -9,13 +10,17 @@ import net.vrallev.android.pong.game.GameField;
  */
 public class PlayerTouchListener implements View.OnTouchListener {
 
-    private boolean mFirstTouchLeft;
     private boolean mOnePlayer;
     private GameField mGameField;
+
+    private boolean mFirstTouchLeft;
+    private boolean mIgnoreTouch;
 
     public PlayerTouchListener(boolean onePlayer, GameField gameField) {
         mOnePlayer = onePlayer;
         mGameField = gameField;
+
+        mIgnoreTouch = false;
     }
 
     @Override
@@ -46,17 +51,33 @@ public class PlayerTouchListener implements View.OnTouchListener {
                 }
             }
 
-            if (leftY >= 0) {
+            if (leftY >= 0 && !mIgnoreTouch) {
                 mGameField.setPlayerLeftPos(leftY);
             }
-            if (rightY >= 0) {
+            if (rightY >= 0 && !mIgnoreTouch) {
                 mGameField.setPlayerRightPos(rightY);
             }
 
         } else {
-            mGameField.setPlayerRightPos((int) event.getY());
+            if (!mIgnoreTouch) {
+                mGameField.setPlayerRightPos((int) event.getY());
+            }
         }
 
         return true;
+    }
+
+    public void onEvent(GameEvent event) {
+        switch (event.getAction()) {
+            case CONTINUE_GAME:
+                mIgnoreTouch = false;
+                break;
+
+            case PAUSE_GAME:
+            case BALL_OUTSIDE_LEFT:
+            case BALL_OUTSIDE_RIGHT:
+                mIgnoreTouch = true;
+                break;
+        }
     }
 }

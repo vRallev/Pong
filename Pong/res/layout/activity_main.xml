@@ -11,6 +11,13 @@
     tools:context=".MainActivity" >
 
     <Button
+        android:id="@+id/button_singleplayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="buttonClick"
+        android:text="@string/start_single_player" />
+
+    <Button
         android:id="@+id/button_local"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

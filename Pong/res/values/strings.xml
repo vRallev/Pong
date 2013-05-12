@@ -9,5 +9,6 @@
     <string name="pause_button">Pause button</string>
     <string name="do_you_really_want_to_quit_the_game">Do you really want to quit the game?</string>
     <string name="confirm">Confirm</string>
+    <string name="start_single_player">Start Single Player</string>
 
 </resources>

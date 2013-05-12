@@ -30,6 +30,9 @@ public class GameField {
         mBall = new GameBall();
         mBall.setPlayerLeft(mPlayerLeft);
         mBall.setPlayerRight(mPlayerRight);
+
+        mScaleX = 1.0f;
+        mScaleY = 1.0f;
     }
 
     public void setDisplayBounds(int width, int height) {
@@ -70,7 +73,7 @@ public class GameField {
             mPlayerLeft = y;
         }
 
-        mBall.setPlayerLeft(y);
+        mBall.setPlayerLeft(mPlayerLeft);
     }
 
     /**
@@ -97,7 +100,7 @@ public class GameField {
             mPlayerRight = y;
         }
 
-        mBall.setPlayerRight(y);
+        mBall.setPlayerRight(mPlayerRight);
     }
 
     /**

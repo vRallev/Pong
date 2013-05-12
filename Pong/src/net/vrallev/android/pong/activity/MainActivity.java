@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
+import net.vrallev.android.pong.game.GameSetup;
 
 /**
  * 
@@ -30,8 +31,14 @@ public class MainActivity extends BaseActivity {
 	
 	public void buttonClick(View v) {
 		switch (v.getId()) {
+            case R.id.button_singleplayer:
+                Intent intent = new GameSetup().setGameSpeed(1.0).setSinglePlayer(true).setAiDifficulty(2).createIntent(this);
+                startActivity(intent);
+                break;
+
 			case R.id.button_local:
-				startActivity(new Intent(this, GameActivity.class));
+                intent = new GameSetup().setGameSpeed(1.0).setSinglePlayer(false).createIntent(this);
+                startActivity(intent);
 				break;
 
 			case R.id.button_network:

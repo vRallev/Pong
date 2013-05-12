@@ -12,6 +12,7 @@ public class GameState {
     }
 
     /*package*/ final boolean mRunning;
+    /*package*/ final double mDefaultGameSpeed;
     /*package*/ final double mGameSpeed;
     /*package*/ final GameField mGameField;
     /*package*/ final int mPlayerLeftScore;
@@ -21,6 +22,7 @@ public class GameState {
         mGameField = host.getGameField();
         mRunning = host.isGameRunning();
         mGameSpeed = host.getGameSpeed();
+        mDefaultGameSpeed = host.getDefaultGameSpeed();
         mPlayerLeftScore = host.getPlayerLeftScore();
         mPlayerRightScore = host.getPlayerRightScore();
     }

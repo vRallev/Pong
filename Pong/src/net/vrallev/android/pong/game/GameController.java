@@ -7,18 +7,18 @@ import de.greenrobot.event.EventBus;
  */
 public class GameController {
 
-    private static final double DEFAULT_SPEED = 1.0;
-
     private final GameField mGameField;
     private final GameLoop mGameLoop;
 
+    private final double mDefaultGameSpeed;
     private double mGameSpeed;
 
     private int mPlayerLeftScore;
     private int mPlayerRightScore;
 
-    public GameController() {
-        mGameSpeed = DEFAULT_SPEED;
+    public GameController(double gameSpeed) {
+        mDefaultGameSpeed = gameSpeed;
+        mGameSpeed = gameSpeed;
 
         mGameField = new GameField();
 
@@ -28,6 +28,7 @@ public class GameController {
 
     public GameController(GameState state) {
         mGameSpeed = state.mGameSpeed;
+        mDefaultGameSpeed = state.mDefaultGameSpeed;
         mGameField = state.mGameField;
         mPlayerLeftScore = state.mPlayerLeftScore;
         mPlayerRightScore = state.mPlayerRightScore;
@@ -67,8 +68,12 @@ public class GameController {
         return mGameSpeed;
     }
 
+    public double getDefaultGameSpeed() {
+        return mDefaultGameSpeed;
+    }
+
     public void resetGameSpeed() {
-        setGameSpeed(DEFAULT_SPEED);
+        setGameSpeed(mDefaultGameSpeed);
     }
 
     public void setGameSpeed(double speed) {

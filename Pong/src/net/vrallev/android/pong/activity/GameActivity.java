@@ -10,9 +10,7 @@ import android.widget.TextView;
 import de.greenrobot.event.EventBus;
 import net.vrallev.android.base.BaseActivity;
 import net.vrallev.android.pong.R;
-import net.vrallev.android.pong.game.GameEvent;
-import net.vrallev.android.pong.game.GameController;
-import net.vrallev.android.pong.game.GameState;
+import net.vrallev.android.pong.game.*;
 import net.vrallev.android.pong.view.PlayerTouchListener;
 import net.vrallev.android.pong.view.DrawingView;
 
@@ -21,6 +19,7 @@ import net.vrallev.android.pong.view.DrawingView;
  */
 public class GameActivity extends BaseActivity {
 
+    public static final String GAME_SETUP = "gameSetup";
     private static final String GAME_STATE = "gameState";
 
     private static final long ANIMATION_DURATION = 1500l;
@@ -31,7 +30,11 @@ public class GameActivity extends BaseActivity {
     private TextView mTextViewScoreLeft;
     private TextView mTextViewScoreRight;
 
+    private PlayerTouchListener mPlayerTouchListener;
+
     private GameController mGameController;
+    private GameAI mGameAI;
+    private GameSetup mGameSetup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +43,22 @@ public class GameActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        if (savedInstanceState != null && savedInstanceState.getString(GAME_STATE) != null) {
+        if (savedInstanceState != null && savedInstanceState.getString(GAME_STATE) != null && savedInstanceState.getString(GAME_SETUP) != null) {
             GameState gameState = GameState.fromJson(savedInstanceState.getString(GAME_STATE));
+            mGameSetup = GameSetup.fromJson(savedInstanceState.getString(GAME_SETUP));
             mGameController = new GameController(gameState);
         } else {
-            mGameController = new GameController();
+            mGameSetup = GameSetup.fromIntent(getIntent());
+            mGameController = new GameController(mGameSetup.getGameSpeed());
         }
 
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
         mDrawingView.setGameField(mGameController.getGameField());
-        mDrawingView.setOnTouchListener(new PlayerTouchListener(false, mGameController.getGameField()));
+
+        mPlayerTouchListener = new PlayerTouchListener(mGameSetup.isSinglePlayer(), mGameController.getGameField());
+        EventBus.getDefault().register(mPlayerTouchListener);
+        mDrawingView.setOnTouchListener(mPlayerTouchListener);
+
         mDrawingView.setAlpha(0.0f);
         mDrawingView.setScaleY(0.0f);
         mDrawingView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).scaleY(1.0f).alpha(1.0f);
@@ -74,12 +83,23 @@ public class GameActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         mHideSoftKeysRunnable.run();
+
+        if (mGameSetup.isSinglePlayer()) {
+            mGameAI = new GameAI(mGameController.getGameField(), mGameSetup.getAiDifficulty());
+            mGameAI.start();
+            mGameAI.pause(true);
+        }
     }
 
     @Override
     protected void onPause() {
         EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PAUSE_GAME));
         mDrawingView.getHandler().removeCallbacks(mHideSoftKeysRunnable);
+
+        if (mGameAI != null) {
+            mGameAI.stopAI();
+            mGameAI = null;
+        }
 
         super.onPause();
     }
@@ -89,12 +109,14 @@ public class GameActivity extends BaseActivity {
         super.onDestroy();
 
         EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(mPlayerTouchListener);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(GAME_STATE, new GameState(mGameController).toJson());
+        outState.putString(GAME_SETUP, mGameSetup.toJson());
     }
 
     @Override
@@ -128,6 +150,7 @@ public class GameActivity extends BaseActivity {
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerRightScore(1 + mGameController.getPlayerRightScore());
                 mGameController.resetGameSpeed();
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -141,6 +164,7 @@ public class GameActivity extends BaseActivity {
                 mGameController.setGameRunning(false);
                 mGameController.setPlayerLeftScore(1 + mGameController.getPlayerLeftScore());
                 mGameController.resetGameSpeed();
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
