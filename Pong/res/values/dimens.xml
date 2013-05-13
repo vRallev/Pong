@@ -7,6 +7,6 @@
     <dimen name="button_play_size">200dp</dimen>
     <dimen name="button_pause_size">50dp</dimen>
 
-    <dimen name="score_text_size">30sp</dimen>
+    <dimen name="score_text_size">45sp</dimen>
 
 </resources>

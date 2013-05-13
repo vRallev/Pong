@@ -60,7 +60,7 @@ public class PlayerTouchListener implements View.OnTouchListener {
 
         } else {
             if (!mIgnoreTouch) {
-                mGameField.setPlayerRightPos((int) event.getY());
+                mGameField.setPlayerRightPos(event.getY());
             }
         }
 

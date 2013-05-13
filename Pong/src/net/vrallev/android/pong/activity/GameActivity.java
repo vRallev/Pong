@@ -2,6 +2,7 @@ package net.vrallev.android.pong.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -77,6 +78,10 @@ public class GameActivity extends BaseActivity {
         mTextViewScoreRight.setAlpha(0.0f);
         mTextViewScoreLeft.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
         mTextViewScoreRight.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "visitor2.ttf");
+        mTextViewScoreLeft.setTypeface(typeface);
+        mTextViewScoreRight.setTypeface(typeface);
     }
 
     @Override

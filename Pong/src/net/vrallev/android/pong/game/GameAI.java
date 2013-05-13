@@ -15,9 +15,9 @@ public class GameAI extends Thread {
     private boolean mRunning;
     private boolean mPaused;
 
-    private int mUnscaledDifficulty;
+    private float mUnscaledDifficulty;
 
-    public GameAI(GameField field, int difficulty) {
+    public GameAI(GameField field, float difficulty) {
         mGameField = field;
         mUnscaledDifficulty = difficulty;
         mRunning = true;
@@ -85,21 +85,21 @@ public class GameAI extends Thread {
 
             ballY = mGameField.getBallY();
             playerLeftPos = mGameField.getPlayerLeftPos();
-            dif = ballY - playerLeftPos;
-            dif += mOffset;
+            dif = ballY - playerLeftPos + mOffset;
 
             if (dif > 0) {
-                mGameField.setPlayerLeftPos((int) (playerLeftPos + Math.min(mDifficulty, Math.abs(dif))));
-            } else if (dif < 0) {
-                mGameField.setPlayerLeftPos((int) (playerLeftPos - Math.min(mDifficulty, Math.abs(dif))));
+                playerLeftPos = playerLeftPos + Math.min(mDifficulty, Math.abs(dif));
+            } else {
+                playerLeftPos = playerLeftPos - Math.min(mDifficulty, Math.abs(dif));
             }
+            mGameField.setPlayerLeftPos(playerLeftPos);
 
             Thread.sleep(6l);
         }
     }
 
     private float createNewOffset() {
-        double max = mGameField.getBallWidth() * 2;
-        return (float) (max - (mGameField.getBallWidth() * 4 * Math.random()));
+        float max = mGameField.getBallWidth() * 2;
+        return max - (mGameField.getBallWidth() * 4 * (float) Math.random());
     }
 }

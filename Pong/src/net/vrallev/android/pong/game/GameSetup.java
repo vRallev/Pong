@@ -20,7 +20,7 @@ public class GameSetup {
 
     private double mGameSpeed;
     private boolean mSinglePlayer;
-    private int mAiDifficulty;
+    private float mAiDifficulty;
 
     public GameSetup() {
         mGameSpeed = 1.0;
@@ -46,11 +46,11 @@ public class GameSetup {
         return this;
     }
 
-    public int getAiDifficulty() {
+    public float getAiDifficulty() {
         return mAiDifficulty;
     }
 
-    public GameSetup setAiDifficulty(int aiDifficulty) {
+    public GameSetup setAiDifficulty(float aiDifficulty) {
         mAiDifficulty = aiDifficulty;
         return this;
     }
