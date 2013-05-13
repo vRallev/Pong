@@ -32,21 +32,21 @@ public class PlayerTouchListener implements View.OnTouchListener {
         int pointerCount = event.getPointerCount();
 
         if (!mOnePlayer) {
-            int leftY = -1;
-            int rightY = -1;
+            float leftY = -1;
+            float rightY = -1;
 
             for (int i = 0; i < pointerCount; i++) {
                 if (event.getPointerId(i) == 0) {
                     if (mFirstTouchLeft) {
-                        leftY = (int) event.getY(i);
+                        leftY = event.getY(i);
                     } else {
-                        rightY = (int) event.getY(i);
+                        rightY = event.getY(i);
                     }
                 } else if (event.getPointerId(i) == 1) {
                     if (mFirstTouchLeft) {
-                        rightY = (int) event.getY(i);
+                        rightY = event.getY(i);
                     } else {
-                        leftY = (int) event.getY(i);
+                        leftY = event.getY(i);
                     }
                 }
             }

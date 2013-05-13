@@ -15,9 +15,11 @@ public class GameAI extends Thread {
     private boolean mRunning;
     private boolean mPaused;
 
+    private int mUnscaledDifficulty;
+
     public GameAI(GameField field, int difficulty) {
         mGameField = field;
-        mDifficulty = difficulty;
+        mUnscaledDifficulty = difficulty;
         mRunning = true;
     }
 
@@ -69,6 +71,10 @@ public class GameAI extends Thread {
                 Thread.sleep(6l);
                 newOffsetTime = System.currentTimeMillis();
                 continue;
+            }
+
+            if (mDifficulty == 0.0f) {
+                mDifficulty = mUnscaledDifficulty / mGameField.getScaleY();
             }
 
             time = System.currentTimeMillis();

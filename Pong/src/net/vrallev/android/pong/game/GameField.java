@@ -16,8 +16,8 @@ public class GameField {
     private float mScaleX;
     private float mScaleY;
 
-    private int mPlayerLeft;
-    private int mPlayerRight;
+    private float mPlayerLeft;
+    private float mPlayerRight;
 
     private GameBall mBall;
 
@@ -42,18 +42,26 @@ public class GameField {
         mMatrix.setScale(mScaleX, mScaleY);
     }
 
+    public float getScaleX() {
+        return mScaleX;
+    }
+
+    public float getScaleY() {
+        return mScaleY;
+    }
+
     /**
      * @return The ball's width.
      */
-    public int getBallWidth() {
-        return (int) mMatrix.mapRadius(GameBall.WIDTH);
+    public float getBallWidth() {
+        return mMatrix.mapRadius(GameBall.WIDTH);
     }
 
     /**
      * @return The y position of the middle of the left player's stroke.
      */
-    public int getPlayerLeftPos() {
-        return (int) (mPlayerLeft * mScaleY);
+    public float getPlayerLeftPos() {
+        return mPlayerLeft * mScaleY;
     }
 
     /**
@@ -62,8 +70,8 @@ public class GameField {
      *
      * @param y The y position.
      */
-    public void setPlayerLeftPos(int y) {
-        y = (int) (y / mScaleY);
+    public void setPlayerLeftPos(float y) {
+        y = y / mScaleY;
 
         if (y - GameBall.WIDTH * 2 < 0) {
             mPlayerLeft = GameBall.WIDTH * 2;
@@ -79,8 +87,8 @@ public class GameField {
     /**
      * @return The y position of the middle of the right player's stroke.
      */
-    public int getPlayerRightPos() {
-        return (int) (mPlayerRight * mScaleY);
+    public float getPlayerRightPos() {
+        return mPlayerRight * mScaleY;
     }
 
     /**
@@ -89,8 +97,8 @@ public class GameField {
      *
      * @param y The y position.
      */
-    public void setPlayerRightPos(int y) {
-        y = (int) (y / mScaleY);
+    public void setPlayerRightPos(float y) {
+        y = y / mScaleY;
 
         if (y - GameBall.WIDTH * 2 < 0) {
             mPlayerRight = GameBall.WIDTH * 2;

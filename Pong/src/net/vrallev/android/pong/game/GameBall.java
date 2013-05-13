@@ -12,8 +12,8 @@ public class GameBall {
     /*package*/ float mX;
     /*package*/ float mY;
 
-    private transient int mPlayerLeft;
-    private transient int mPlayerRight;
+    private transient float mPlayerLeft;
+    private transient float mPlayerRight;
 
     private int mDegrees = 340;
 
@@ -21,11 +21,11 @@ public class GameBall {
         resetBallPos();
     }
 
-    public void setPlayerLeft(int y) {
+    public void setPlayerLeft(float y) {
         mPlayerLeft = y;
     }
 
-    public void setPlayerRight(int y) {
+    public void setPlayerRight(float y) {
         mPlayerRight = y;
     }
 
@@ -34,7 +34,7 @@ public class GameBall {
         mY = 2 * WIDTH;
     }
 
-    private int getBounceDegree(float ballY, int playerY) {
+    private int getBounceDegree(float ballY, float playerY) {
         playerY = playerY - 2 * WIDTH - WIDTH / 2;
         ballY = ballY - playerY;
         playerY = 5 * WIDTH;

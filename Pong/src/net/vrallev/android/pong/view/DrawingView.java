@@ -27,7 +27,7 @@ public class DrawingView extends View {
 	private int mHeight;
 	private int mWidth;
 	
-	private int mBallWidth;
+	private float mBallWidth;
 	
 	private GameField mGameField;
 	
@@ -78,9 +78,9 @@ public class DrawingView extends View {
 		onDrawBall(canvas, mGameField.getBallX(), mGameField.getBallY());
 		
 		onDrawMiddleLine(canvas);
-		
-		int leftY = mGameField.getPlayerLeftPos();
-		int rightY = mGameField.getPlayerRightPos();
+
+        float leftY = mGameField.getPlayerLeftPos();
+        float rightY = mGameField.getPlayerRightPos();
 		
 		onDrawPlayer(canvas, mBallWidth / 2, leftY);
 		onDrawPlayer(canvas, mWidth - mBallWidth / 2, rightY);
@@ -94,11 +94,11 @@ public class DrawingView extends View {
 		float step = mHeight / 41f;
 		
 		for (float y = 0; y < mHeight; y += step * 2) {
-			canvas.drawLine(x, (int)y, x, (int) (y + step), mPaintMiddleLine);
+			canvas.drawLine(x, y, x, y + step, mPaintMiddleLine);
 		}
 	}
 	
-	protected void onDrawPlayer(Canvas canvas, int x, int y) {
+	protected void onDrawPlayer(Canvas canvas, float x, float y) {
 		canvas.drawLine(x, y - 2 * mBallWidth, x, y + 2 * mBallWidth, mPaint);
 	}
 	
