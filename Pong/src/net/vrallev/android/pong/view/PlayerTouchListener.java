@@ -20,7 +20,7 @@ public class PlayerTouchListener implements View.OnTouchListener {
         mOnePlayer = onePlayer;
         mGameField = gameField;
 
-        mIgnoreTouch = false;
+        mIgnoreTouch = true;
     }
 
     @Override

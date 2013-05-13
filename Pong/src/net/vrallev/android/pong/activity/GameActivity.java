@@ -60,28 +60,21 @@ public class GameActivity extends BaseActivity {
         EventBus.getDefault().register(mPlayerTouchListener);
         mDrawingView.setOnTouchListener(mPlayerTouchListener);
 
-        mDrawingView.setAlpha(0.0f);
-        mDrawingView.setScaleY(0.0f);
-        mDrawingView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).scaleY(1.0f).alpha(1.0f);
-
         mPlayView = (ImageView) findViewById(R.id.imageView_play);
         mPlayView.setOnClickListener(mOnClickListener);
-        mPlayView.setScaleX(0.0f);
-        mPlayView.setScaleY(0.0f);
-        scalePlayButtonIn();
 
         mTextViewScoreLeft = (TextView) findViewById(R.id.textView_score_left);
         mTextViewScoreRight = (TextView) findViewById(R.id.textView_score_right);
         mTextViewScoreLeft.setText(String.valueOf(mGameController.getPlayerLeftScore()));
         mTextViewScoreRight.setText(String.valueOf(mGameController.getPlayerRightScore()));
-        mTextViewScoreLeft.setAlpha(0.0f);
-        mTextViewScoreRight.setAlpha(0.0f);
-        mTextViewScoreLeft.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
-        mTextViewScoreRight.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "visitor2.ttf");
         mTextViewScoreLeft.setTypeface(typeface);
         mTextViewScoreRight.setTypeface(typeface);
+
+        if (savedInstanceState == null) {
+            playInAnimation();
+        }
     }
 
     @Override
@@ -99,7 +92,9 @@ public class GameActivity extends BaseActivity {
     @Override
     protected void onPause() {
         EventBus.getDefault().post(GameEvent.obtain(GameEvent.Action.PAUSE_GAME));
-        mDrawingView.getHandler().removeCallbacks(mHideSoftKeysRunnable);
+        if (mDrawingView.getHandler() != null) {
+            mDrawingView.getHandler().removeCallbacks(mHideSoftKeysRunnable);
+        }
 
         if (mGameAI != null) {
             mGameAI.stopAI();
@@ -274,4 +269,19 @@ public class GameActivity extends BaseActivity {
             mDrawingView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         }
     };
+
+    private void playInAnimation() {
+        mDrawingView.setAlpha(0.0f);
+        mDrawingView.setScaleY(0.0f);
+        mDrawingView.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).scaleY(1.0f).alpha(1.0f);
+
+        mPlayView.setScaleX(0.0f);
+        mPlayView.setScaleY(0.0f);
+        scalePlayButtonIn();
+
+        mTextViewScoreLeft.setAlpha(0.0f);
+        mTextViewScoreRight.setAlpha(0.0f);
+        mTextViewScoreLeft.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
+        mTextViewScoreRight.animate().setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(ANIMATION_DURATION).alpha(1.0f);
+    }
 }
