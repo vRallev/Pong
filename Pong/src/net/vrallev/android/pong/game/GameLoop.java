@@ -60,12 +60,15 @@ import net.vrallev.android.base.util.L;
 
     private void innerRun() throws InterruptedException {
         long speedControlTime = System.currentTimeMillis();
+        long moveControlTime = System.currentTimeMillis();
 
         while (!mFinished) {
             if (mPaused) {
                 speedControlTime = System.currentTimeMillis();
 
                 Thread.sleep(10);
+
+                moveControlTime = System.currentTimeMillis();
                 continue;
             }
 
@@ -76,9 +79,12 @@ import net.vrallev.android.base.util.L;
                 mGameController.setGameSpeed(mGameSpeed);
             }
 
-            mGameField.moveBall(mGameSpeed);
+            while (currentTime - moveControlTime > 0) {
+                moveControlTime++;
+                mGameField.moveBall(mGameSpeed);
+            }
 
-            Thread.sleep(1);
+            Thread.sleep(5);
         }
     }
 }

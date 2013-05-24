@@ -15,11 +15,9 @@ public class GameAI extends Thread {
     private boolean mRunning;
     private boolean mPaused;
 
-    private float mUnscaledDifficulty;
-
     public GameAI(GameField field, float difficulty) {
         mGameField = field;
-        mUnscaledDifficulty = difficulty;
+        mDifficulty = difficulty;
         mRunning = true;
     }
 
@@ -59,43 +57,44 @@ public class GameAI extends Thread {
     }
 
     private void innerRun() throws InterruptedException {
-        float ballY;
-        float playerLeftPos;
-        float dif;
-
-        long newOffsetTime = System.currentTimeMillis();
-        long time;
+        long offsetControlTime = System.currentTimeMillis();
+        long moveControlTime = offsetControlTime;
 
         while (mRunning) {
             if (mPaused) {
                 Thread.sleep(6l);
-                newOffsetTime = System.currentTimeMillis();
+                offsetControlTime = System.currentTimeMillis();
+                moveControlTime = offsetControlTime;
                 continue;
             }
 
-            if (mDifficulty == 0.0f) {
-                mDifficulty = mUnscaledDifficulty / mGameField.getScaleY();
-            }
-
-            time = System.currentTimeMillis();
-            if (time - newOffsetTime > 3000) {
-                newOffsetTime = time;
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - offsetControlTime > 3000) {
+                offsetControlTime = currentTime;
                 mOffset = createNewOffset();
             }
 
-            ballY = mGameField.getBallY();
-            playerLeftPos = mGameField.getPlayerLeftPos();
-            dif = ballY - playerLeftPos + mOffset;
-
-            if (dif > 0) {
-                playerLeftPos = playerLeftPos + Math.min(mDifficulty, Math.abs(dif));
-            } else {
-                playerLeftPos = playerLeftPos - Math.min(mDifficulty, Math.abs(dif));
+            while (currentTime - moveControlTime > 0) {
+                moveControlTime++;
+                moveKI();
             }
-            mGameField.setPlayerLeftPos(playerLeftPos);
 
-            Thread.sleep(6l);
+            Thread.sleep(5l);
         }
+    }
+
+    private void moveKI() {
+        float scaleY = mGameField.getScaleY();
+        float ballY = mGameField.getBallY() / scaleY;
+        float playerLeftPos = mGameField.getPlayerLeftPos() / scaleY;
+        float dif = ballY - playerLeftPos + mOffset;
+
+        if (dif > 0) {
+            playerLeftPos = playerLeftPos + Math.min(mDifficulty, Math.abs(dif));
+        } else {
+            playerLeftPos = playerLeftPos - Math.min(mDifficulty, Math.abs(dif));
+        }
+        mGameField.setPlayerLeftPos(playerLeftPos * scaleY);
     }
 
     private float createNewOffset() {

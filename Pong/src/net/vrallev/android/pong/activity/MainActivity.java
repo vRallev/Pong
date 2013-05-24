@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
 	public void buttonClick(View v) {
 		switch (v.getId()) {
             case R.id.button_singleplayer:
-                Intent intent = new GameSetup().setGameSpeed(1.0).setSinglePlayer(true).setAiDifficulty(2).createIntent(this);
+                Intent intent = new GameSetup().setGameSpeed(1.0).setSinglePlayer(true).setAiDifficulty(1.5f).createIntent(this);
                 startActivity(intent);
                 break;
 
