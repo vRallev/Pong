@@ -21,11 +21,11 @@ public class GameBall {
         resetBallPos();
     }
 
-    public void setPlayerLeft(float y) {
+    /*package*/  void setPlayerLeft(float y) {
         mPlayerLeft = y;
     }
 
-    public void setPlayerRight(float y) {
+    /*package*/ void setPlayerRight(float y) {
         mPlayerRight = y;
     }
 
